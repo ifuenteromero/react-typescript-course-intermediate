@@ -1,26 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
-import apiClient from '../services/api-client';
-import endpoints from '../services/endpoints';
-
-interface Todo {
-	id: number;
-	title: string;
-	userId: number;
-	completed: boolean;
-}
+import useTodos from './hooks/useTodos';
 
 const TodoList = () => {
-	const fetchTodos = () =>
-		apiClient.get<Todo[]>(endpoints.todos).then((res) => res.data);
-
-	const {
-		data: todos,
-		error,
-		isLoading,
-	} = useQuery<Todo[], Error>({
-		queryKey: ['todos'],
-		queryFn: fetchTodos,
-	});
+	const { data: todos, error, isLoading } = useTodos();
 
 	if (isLoading) return <p>Loading...</p>;
 
