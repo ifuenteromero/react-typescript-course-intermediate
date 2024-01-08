@@ -9,12 +9,18 @@ interface Post {
 	userId: number;
 }
 
-const usePosts = () => {
+const usePosts = (userId: number | undefined) => {
 	const fetchPosts = () =>
-		apiClient.get<Post[]>(endpoints.posts).then((res) => res.data);
+		apiClient
+			.get<Post[]>(endpoints.posts, {
+				params: {
+					userId,
+				},
+			})
+			.then((res) => res.data);
 
 	const { data, error, isLoading } = useQuery<Post[], Error>({
-		queryKey: ['posts'],
+		queryKey: userId ? ['user', userId, 'posts'] : ['posts'],
 		queryFn: fetchPosts,
 	});
 
