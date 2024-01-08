@@ -1,35 +1,32 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import apiClient from '../services/api-client';
+import endpoints from '../services/endpoints';
 
 interface Todo {
-  id: number;
-  title: string;
-  userId: number;
-  completed: boolean;
+	id: number;
+	title: string;
+	userId: number;
+	completed: boolean;
 }
 
 const TodoList = () => {
-  const [todos, setTodos] = useState<Todo[]>([]);
-  const [error, setError] = useState('');
+	const fetchTodos = () =>
+		apiClient.get<Todo[]>(endpoints.todos).then((res) => res.data);
 
-  useEffect(() => {
-    axios
-      .get('https://jsonplaceholder.typicode.com/todos')
-      .then((res) => setTodos(res.data))
-      .catch((error) => setError(error));
-  }, []);
+	const { data: todos } = useQuery({
+		queryKey: ['todos'],
+		queryFn: fetchTodos,
+	});
 
-  if (error) return <p>{error}</p>;
-
-  return (
-    <ul className="list-group">
-      {todos.map((todo) => (
-        <li key={todo.id} className="list-group-item">
-          {todo.title}
-        </li>
-      ))}
-    </ul>
-  );
+	return (
+		<ul className='list-group'>
+			{todos?.map((todo) => (
+				<li key={todo.id} className='list-group-item'>
+					{todo.title}
+				</li>
+			))}
+		</ul>
+	);
 };
 
 export default TodoList;
