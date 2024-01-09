@@ -22,6 +22,9 @@ const TodoForm = () => {
 				...todos,
 			]);
 		},
+		onSettled: () => {
+			if (ref.current?.value) ref.current.value = '';
+		},
 		retry: 3,
 	});
 
@@ -46,10 +49,20 @@ const TodoForm = () => {
 			)}
 			<form className='row mb-3' onSubmit={handleSubmit}>
 				<div className='col'>
-					<input ref={ref} type='text' className='form-control' />
+					<input
+						readOnly={addTodo.isLoading}
+						ref={ref}
+						type='text'
+						className='form-control'
+					/>
 				</div>
 				<div className='col'>
-					<button className='btn btn-primary'>Add</button>
+					<button
+						disabled={addTodo.isLoading}
+						className='btn btn-primary'
+					>
+						{addTodo.isLoading ? 'Adding...' : 'Add'}
+					</button>
 				</div>
 			</form>
 		</>
