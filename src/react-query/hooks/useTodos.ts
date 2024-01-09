@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import apiClient from '../../services/api-client';
 import endpoints from '../../services/endpoints';
 
-interface Todo {
+export interface Todo {
 	id: number;
 	title: string;
 	userId: number;
