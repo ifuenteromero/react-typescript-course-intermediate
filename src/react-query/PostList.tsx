@@ -1,52 +1,35 @@
 import { useState } from 'react';
-import usePosts, { PostQueryOptions } from './hooks/usePosts';
+import usePosts, { PostQuery } from './hooks/usePosts';
 
 const PostList = () => {
-	const [postQueryOptions, setPostQueryOptions] = useState<PostQueryOptions>({
+	const [query, setQuery] = useState<PostQuery>({
 		page: 1,
-	} as PostQueryOptions);
+	} as PostQuery);
 
-	const { page, userId } = postQueryOptions;
+	const { page } = query;
 
-	const { data: posts, error, isLoading } = usePosts(postQueryOptions);
+	const { data: posts, error, isLoading } = usePosts(query);
 
 	if (isLoading) return <p>Loading...</p>;
 
 	if (error) return <p>{error.message}</p>;
 
-	const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) =>
-		setPostQueryOptions({
-			userId: parseInt(e.target.value) || undefined,
-			page: 1,
-		});
-
 	const handlePreviousPage = () =>
-		setPostQueryOptions({
-			...postQueryOptions,
+		setQuery({
+			...query,
 			page: page - 1,
 		});
 
 	const handleNextPage = () =>
-		setPostQueryOptions({
-			...postQueryOptions,
+		setQuery({
+			...query,
 			page: page + 1,
 		});
 
-	const userText = userId ? `User ${userId}` : 'All users';
 	const pageText = `Page ${page}`;
 
 	return (
 		<>
-			<select
-				onChange={handleChange}
-				value={userId}
-				className='form-select mb-3'
-			>
-				<option value=''></option>
-				<option value='1'>User 1</option>
-				<option value='2'>User 2</option>
-				<option value='3'>User 3</option>
-			</select>
 			<ul className='list-group'>
 				{posts?.map((post) => (
 					<li key={post.id} className='list-group-item'>
@@ -65,9 +48,7 @@ const PostList = () => {
 				<button className='btn btn-primary' onClick={handleNextPage}>
 					Next
 				</button>
-				<p className='mb-0'>
-					{userText} - {pageText}
-				</p>
+				<p className='mb-0'>{pageText}</p>
 			</div>
 		</>
 	);

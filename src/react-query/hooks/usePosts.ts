@@ -9,17 +9,13 @@ interface Post {
 	userId: number;
 }
 
-export interface PostQueryOptions {
-	userId: number | undefined;
+export interface PostQuery {
+	pageSize?: number;
 	page: number;
 }
 
-interface PostQuery extends PostQueryOptions {
-	pageSize?: number;
-}
-
 const usePosts = (query: PostQuery) => {
-	const { page, userId, pageSize = 10 } = query;
+	const { page, pageSize = 10 } = query;
 	const fetchPosts = () =>
 		apiClient
 			.get<Post[]>(endpoints.posts, {
@@ -31,10 +27,11 @@ const usePosts = (query: PostQuery) => {
 			.then((res) => res.data);
 
 	const { data, error, isLoading } = useQuery<Post[], Error>({
-		queryKey: ['user', userId || 'All', 'page', page],
+		queryKey: ['posts', 'page', page],
 		queryFn: fetchPosts,
 		refetchOnWindowFocus: false,
 		keepPreviousData: true,
+		staleTime: 10_000, // 10s
 	});
 
 	return { data, error, isLoading };
