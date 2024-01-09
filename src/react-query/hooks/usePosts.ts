@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import apiClient from '../../services/api-client';
 import endpoints from '../../services/endpoints';
 
@@ -8,33 +8,35 @@ interface Post {
 	body: string;
 	userId: number;
 }
-
-export interface PostQuery {
+interface PostQuery {
 	pageSize?: number;
-	page: number;
 }
 
 const usePosts = (query: PostQuery) => {
-	const { page, pageSize = 10 } = query;
-	const fetchPosts = () =>
+	const { pageSize = 10 } = query;
+
+	const fetchPosts = ({ pageParam = 1 }) =>
 		apiClient
 			.get<Post[]>(endpoints.posts, {
 				params: {
-					_start: (page - 1) * pageSize,
+					_start: (pageParam - 1) * pageSize,
 					_limit: pageSize,
 				},
 			})
 			.then((res) => res.data);
 
-	const { data, error, isLoading } = useQuery<Post[], Error>({
-		queryKey: ['posts', 'page', page],
+	return useInfiniteQuery<Post[], Error>({
+		queryKey: ['posts'],
 		queryFn: fetchPosts,
 		refetchOnWindowFocus: false,
 		keepPreviousData: true,
 		staleTime: 10_000, // 10s
+		getNextPageParam: (lastResults, allResults) => {
+			const page = allResults.length;
+			const isLastPage = lastResults.length < pageSize;
+			return isLastPage ? undefined : page + 1;
+		},
 	});
-
-	return { data, error, isLoading };
 };
 
 export default usePosts;

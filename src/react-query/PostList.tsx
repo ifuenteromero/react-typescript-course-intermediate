@@ -1,55 +1,47 @@
-import { useState } from 'react';
-import usePosts, { PostQuery } from './hooks/usePosts';
+import { Fragment } from 'react';
+import usePosts from './hooks/usePosts';
 
 const PostList = () => {
-	const [query, setQuery] = useState<PostQuery>({
-		page: 1,
-	} as PostQuery);
+	const query = {
+		pageSize: 10,
+	};
 
-	const { page } = query;
-
-	const { data: posts, error, isLoading } = usePosts(query);
+	const {
+		data,
+		error,
+		isLoading,
+		fetchNextPage,
+		isFetchingNextPage,
+		hasNextPage,
+	} = usePosts(query);
 
 	if (isLoading) return <p>Loading...</p>;
-
 	if (error) return <p>{error.message}</p>;
 
-	const handlePreviousPage = () =>
-		setQuery({
-			...query,
-			page: page - 1,
-		});
-
-	const handleNextPage = () =>
-		setQuery({
-			...query,
-			page: page + 1,
-		});
-
-	const pageText = `Page ${page}`;
+	const buttonText = isFetchingNextPage ? 'Loading...' : 'Load More';
 
 	return (
 		<>
 			<ul className='list-group'>
-				{posts?.map((post) => (
-					<li key={post.id} className='list-group-item'>
-						{post.title}
-					</li>
+				{data.pages.map((page, index) => (
+					<Fragment key={index}>
+						{page.map((post) => (
+							<li key={post.id} className='list-group-item'>
+								{post.title}
+							</li>
+						))}
+					</Fragment>
 				))}
 			</ul>
-			<div className='d-flex mt-1 gap-1 align-items-center'>
+			{hasNextPage && (
 				<button
-					disabled={page === 1}
 					className='btn btn-primary'
-					onClick={handlePreviousPage}
+					onClick={() => fetchNextPage()}
+					disabled={isFetchingNextPage}
 				>
-					Previous
+					{buttonText}
 				</button>
-				<button className='btn btn-primary' onClick={handleNextPage}>
-					Next
-				</button>
-				<p className='mb-0'>{pageText}</p>
-			</div>
+			)}
 		</>
 	);
 };
