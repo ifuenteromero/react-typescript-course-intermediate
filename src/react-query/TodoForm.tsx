@@ -7,10 +7,10 @@ import { Todo } from './hooks/useTodos';
 const TodoForm = () => {
 	const ref = useRef<HTMLInputElement>(null);
 	const postToDo = (newTodo: Todo) =>
-		apiClient.post<Todo>(endpoints.todos, newTodo).then((res) => res.data);
+		apiClient.post<Todo>('/xtodos', newTodo).then((res) => res.data);
 	const queryClient = useQueryClient(); // no se puede poner dentro del onSuccess
 
-	const addTodo = useMutation({
+	const addTodo = useMutation<Todo, Error, Todo>({
 		mutationFn: postToDo,
 		onSuccess: (savedTodo) => {
 			// APPROACH 1. Not valid with jsonplaceholder pq no guarda datos
@@ -22,6 +22,7 @@ const TodoForm = () => {
 				...todos,
 			]);
 		},
+		retry: 3,
 	});
 
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -37,14 +38,21 @@ const TodoForm = () => {
 	};
 
 	return (
-		<form className='row mb-3' onSubmit={handleSubmit}>
-			<div className='col'>
-				<input ref={ref} type='text' className='form-control' />
-			</div>
-			<div className='col'>
-				<button className='btn btn-primary'>Add</button>
-			</div>
-		</form>
+		<>
+			{addTodo.error && (
+				<div className='alert alert-danger'>
+					{addTodo.error?.message}
+				</div>
+			)}
+			<form className='row mb-3' onSubmit={handleSubmit}>
+				<div className='col'>
+					<input ref={ref} type='text' className='form-control' />
+				</div>
+				<div className='col'>
+					<button className='btn btn-primary'>Add</button>
+				</div>
+			</form>
+		</>
 	);
 };
 
