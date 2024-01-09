@@ -9,19 +9,32 @@ interface Post {
 	userId: number;
 }
 
-const usePosts = (userId: number | undefined) => {
+export interface PostQueryOptions {
+	userId: number | undefined;
+	page: number;
+}
+
+interface PostQuery extends PostQueryOptions {
+	pageSize?: number;
+}
+
+const usePosts = (query: PostQuery) => {
+	const { page, userId, pageSize = 10 } = query;
 	const fetchPosts = () =>
 		apiClient
 			.get<Post[]>(endpoints.posts, {
 				params: {
-					userId,
+					_start: (page - 1) * pageSize,
+					_limit: pageSize,
 				},
 			})
 			.then((res) => res.data);
 
 	const { data, error, isLoading } = useQuery<Post[], Error>({
-		queryKey: userId ? ['user', userId, 'posts'] : ['posts'],
+		queryKey: ['user', userId || 'All', 'page', page],
 		queryFn: fetchPosts,
+		refetchOnWindowFocus: false,
+		keepPreviousData: true,
 	});
 
 	return { data, error, isLoading };
