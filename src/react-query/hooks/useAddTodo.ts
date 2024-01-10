@@ -1,17 +1,13 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import endpoints from '../../services/endpoints';
-import { Todo } from './useTodos';
 import { CACHE_KEY_TODOS } from '../constants';
-import APIClient from '../../services/api-client';
+import todoService, { Todo } from '../../services/todoService';
 
 interface AddTodoContext {
 	previousTodos: Todo[];
 }
 
-const apiClient = new APIClient<Todo>(endpoints.todos);
-
 const useAddTodo = (onAdd: () => void) => {
-	const postToDo = apiClient.post;
+	const postToDo = todoService.post;
 	const queryClient = useQueryClient(); // no se puede poner dentro del onSuccess
 
 	return useMutation<Todo, Error, Todo, AddTodoContext>({

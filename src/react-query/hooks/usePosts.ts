@@ -1,24 +1,15 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import endpoints from '../../services/endpoints';
-import APIClient from '../../services/api-client';
+import postService, { Post } from '../../services/postService';
 
-interface Post {
-	id: number;
-	title: string;
-	body: string;
-	userId: number;
-}
 interface PostQuery {
 	pageSize?: number;
 }
-
-const apiClient = new APIClient<Post>(endpoints.posts);
 
 const usePosts = (query: PostQuery) => {
 	const { pageSize = 10 } = query;
 
 	const fetchPosts = ({ pageParam = 1 }) =>
-		apiClient.getAll({
+		postService.getAll({
 			params: {
 				_start: (pageParam - 1) * pageSize,
 				_limit: pageSize,
