@@ -3,6 +3,7 @@ import { useRef } from 'react';
 import apiClient from '../services/api-client';
 import endpoints from '../services/endpoints';
 import { Todo } from './hooks/useTodos';
+import { CACHE_KEY_TODOS } from './constants';
 
 interface AddTodoContext {
 	previousTodos: Todo[];
@@ -17,21 +18,21 @@ const TodoForm = () => {
 	const addTodo = useMutation<Todo, Error, Todo, AddTodoContext>({
 		onMutate: (newTodo) => {
 			const previousTodos =
-				queryClient.getQueryData<Todo[]>(['todos']) || [];
+				queryClient.getQueryData<Todo[]>(CACHE_KEY_TODOS) || [];
 
-			queryClient.setQueriesData<Todo[]>(['todos'], (todos = []) => [
-				newTodo,
-				...todos,
-			]);
+			queryClient.setQueriesData<Todo[]>(
+				CACHE_KEY_TODOS,
+				(todos = []) => [newTodo, ...todos]
+			);
 			return { previousTodos };
 		},
 		mutationFn: postToDo,
 		onSuccess: (savedTodo) => {
 			// APPROACH 1. Not valid with jsonplaceholder pq no guarda datos
 			// Invalidating the cache
-			// queryClient.invalidateQueries({ queryKey: ['todos'] });
+			// queryClient.invalidateQueries({ queryKey: CACHE_KEY_TODOS });
 			// APPROACH 2
-			queryClient.setQueriesData<Todo[]>(['todos'], (todos = []) =>
+			queryClient.setQueriesData<Todo[]>(CACHE_KEY_TODOS, (todos = []) =>
 				todos.map((todo) =>
 					todo.title === savedTodo.title ? savedTodo : todo
 				)
@@ -41,7 +42,7 @@ const TodoForm = () => {
 			if (!context) return;
 			const { previousTodos } = context;
 
-			queryClient.setQueriesData<Todo[]>(['todos'], previousTodos);
+			queryClient.setQueriesData<Todo[]>(CACHE_KEY_TODOS, previousTodos);
 		},
 		onSettled: () => {
 			if (ref.current?.value) ref.current.value = '';
