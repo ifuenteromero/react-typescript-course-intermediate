@@ -17,6 +17,7 @@ const useTodos = () => {
 		queryKey: ['todos'],
 		queryFn: fetchTodos,
 		staleTime: 10_000,
+		refetchOnWindowFocus: false,
 	});
 
 	return { data, error, isLoading };
