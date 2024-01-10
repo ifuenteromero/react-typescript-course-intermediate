@@ -1,54 +1,14 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRef } from 'react';
-import apiClient from '../services/api-client';
-import endpoints from '../services/endpoints';
-import { Todo } from './hooks/useTodos';
-import { CACHE_KEY_TODOS } from './constants';
-
-interface AddTodoContext {
-	previousTodos: Todo[];
-}
+import useAddTodo from './hooks/useAddTodo';
 
 const TodoForm = () => {
 	const ref = useRef<HTMLInputElement>(null);
-	const postToDo = (newTodo: Todo) =>
-		apiClient.post<Todo>(endpoints.todos, newTodo).then((res) => res.data);
-	const queryClient = useQueryClient(); // no se puede poner dentro del onSuccess
 
-	const addTodo = useMutation<Todo, Error, Todo, AddTodoContext>({
-		onMutate: (newTodo) => {
-			const previousTodos =
-				queryClient.getQueryData<Todo[]>(CACHE_KEY_TODOS) || [];
+	const onAddTodo = () => {
+		if (ref.current?.value) ref.current.value = '';
+	};
 
-			queryClient.setQueriesData<Todo[]>(
-				CACHE_KEY_TODOS,
-				(todos = []) => [newTodo, ...todos]
-			);
-			return { previousTodos };
-		},
-		mutationFn: postToDo,
-		onSuccess: (savedTodo) => {
-			// APPROACH 1. Not valid with jsonplaceholder pq no guarda datos
-			// Invalidating the cache
-			// queryClient.invalidateQueries({ queryKey: CACHE_KEY_TODOS });
-			// APPROACH 2
-			queryClient.setQueriesData<Todo[]>(CACHE_KEY_TODOS, (todos = []) =>
-				todos.map((todo) =>
-					todo.title === savedTodo.title ? savedTodo : todo
-				)
-			);
-		},
-		onError(_error, _variables, context) {
-			if (!context) return;
-			const { previousTodos } = context;
-
-			queryClient.setQueriesData<Todo[]>(CACHE_KEY_TODOS, previousTodos);
-		},
-		onSettled: () => {
-			if (ref.current?.value) ref.current.value = '';
-		},
-		retry: 3,
-	});
+	const addTodo = useAddTodo(onAddTodo);
 
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
