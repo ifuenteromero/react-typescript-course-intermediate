@@ -1,6 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import apiClient from '../../services/api-client';
 import endpoints from '../../services/endpoints';
+import APIClient from '../../services/api-client';
 
 interface Post {
 	id: number;
@@ -12,18 +12,18 @@ interface PostQuery {
 	pageSize?: number;
 }
 
+const apiClient = new APIClient<Post>(endpoints.posts);
+
 const usePosts = (query: PostQuery) => {
 	const { pageSize = 10 } = query;
 
 	const fetchPosts = ({ pageParam = 1 }) =>
-		apiClient
-			.get<Post[]>(endpoints.posts, {
-				params: {
-					_start: (pageParam - 1) * pageSize,
-					_limit: pageSize,
-				},
-			})
-			.then((res) => res.data);
+		apiClient.getAll({
+			params: {
+				_start: (pageParam - 1) * pageSize,
+				_limit: pageSize,
+			},
+		});
 
 	return useInfiniteQuery<Post[], Error>({
 		queryKey: ['posts'],
