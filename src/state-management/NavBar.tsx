@@ -1,9 +1,9 @@
 import LoginStatus from './auth/LoginStatus';
 import useCounterStore from './counter/store';
-import { useTasks } from './tasks/TasksContext';
+import useTasksStore from './tasks/store';
 
 const NavBar = () => {
-	const { tasks } = useTasks();
+	const tasks = useTasksStore((s) => s.tasks);
 	const { value } = useCounterStore();
 	return (
 		<nav className='navbar d-flex justify-content-between'>
