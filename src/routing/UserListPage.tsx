@@ -1,4 +1,5 @@
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { routes } from './routes';
 
 const UserListPage = () => {
 	const users = [
@@ -14,9 +15,11 @@ const UserListPage = () => {
 					className='list-group-item d-flex justify-content-between'
 					key={user.id}
 				>
-					<Link to={`/users/${user.id}`}>{user.name}</Link>
+					<Link to={routes.userDetail(user.id)}>{user.name}</Link>
 					<Link
-						to={`/users/${user.id}?name=${user.name}&age=${user.age}`}
+						to={`${routes.userDetail(user.id)}?name=${
+							user.name
+						}&age=${user.age}`}
 					>
 						{user.name} Params
 					</Link>

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { routes } from './routes';
 
 const HomePage = () => {
 	return (
@@ -8,8 +9,8 @@ const HomePage = () => {
 				Incidunt, mollitia!
 			</p>
 			<div style={{ display: 'flex', flexDirection: 'column' }}>
-				<Link to='/users'>Users</Link>
-				<Link to='/contact'>contact</Link>
+				<Link to={routes.users}>Users</Link>
+				<Link to={routes.contact}>contact</Link>
 			</div>
 		</>
 	);

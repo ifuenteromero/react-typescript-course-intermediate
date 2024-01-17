@@ -7,26 +7,43 @@ import Layout from './Layout';
 
 const baseUrl = import.meta.env.BASE_URL;
 
+const root = '/';
+const home = '/';
+const users = '/users';
+const contact = '/contact';
+const userDetail = (userId: number | ':id') => `/users/${userId}`;
+
+export const routes = {
+	root,
+	home,
+	users,
+	contact,
+	userDetail,
+};
+
+const relativeRoute = (route: string) =>
+	route.substring(routes.root.length, route.length);
+
 const router = createBrowserRouter(
 	[
 		{
-			path: '/',
+			path: routes.root,
 			element: <Layout />,
 			children: [
 				{
-					path: '/',
+					path: relativeRoute(routes.home),
 					element: <HomePage />,
 				},
 				{
-					path: '/users',
+					path: relativeRoute(routes.users),
 					element: <UserListPage />,
 				},
 				{
-					path: '/contact',
+					path: relativeRoute(routes.contact),
 					element: <ContactPage />,
 				},
 				{
-					path: '/users/:id',
+					path: relativeRoute(routes.userDetail(':id')),
 					element: <UserDetailPage />,
 				},
 			],
