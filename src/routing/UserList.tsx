@@ -1,7 +1,7 @@
-import { Link } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
 import { routes } from './routes';
 
-const UserListPage = () => {
+const UserList = () => {
 	const users = [
 		{ id: 1, name: 'Mosh', age: 99 },
 		{ id: 2, name: 'John', age: 22 },
@@ -29,4 +29,4 @@ const UserListPage = () => {
 	);
 };
 
-export default UserListPage;
+export default UserList;
