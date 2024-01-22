@@ -5,6 +5,7 @@ import Layout from './Layout';
 import UserDetail from './UserDetail';
 import UsersPage from './UsersPage';
 import { routes } from './routes';
+import ErrorPage from './ErrorPage';
 
 const relativeRoute = (route: string, relativeRoute: string = routes.root) =>
 	route.substring(relativeRoute.length, route.length);
@@ -14,6 +15,7 @@ const router = createBrowserRouter(
 		{
 			path: routes.root,
 			element: <Layout />,
+			errorElement: <ErrorPage />,
 			children: [
 				{
 					path: relativeRoute(routes.home),
