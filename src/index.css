@@ -1,3 +1,7 @@
-body { 
-  padding: 1rem; 
+body {
+	padding: 1rem;
+}
+
+.nav-link.active-link {
+	color: rgb(31, 192, 160);
 }
