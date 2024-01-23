@@ -6,6 +6,7 @@ import UserDetail from './UserDetail';
 import UsersPage from './UsersPage';
 import { routes } from './routes';
 import ErrorPage from './ErrorPage';
+import LoginPage from './LoginPage';
 
 const relativeRoute = (route: string, relativeRoute: string = routes.root) =>
 	route.substring(relativeRoute.length, route.length);
@@ -21,6 +22,7 @@ const router = createBrowserRouter(
 					path: relativeRoute(routes.home),
 					element: <HomePage />,
 				},
+				{ path: relativeRoute(routes.login), element: <LoginPage /> },
 				{
 					path: relativeRoute(routes.users),
 					element: <UsersPage />,
